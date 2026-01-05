@@ -1,0 +1,13 @@
+:root {
+  --background: #F5F5F5;
+  --content: #63666A;
+  --primary: linear-gradient(98.5deg, #FF784E 0%, #FB347C 99.75%);
+  --primary-linear: #FB6232;
+  --secondary: #292929;
+  --color-button: #FB6232;
+  --white: #FFFFFF;
+  --admin-color: #003569;
+  --editor-color: #269085;
+  --viewer-color: #5993B9;
+  --guest-color: #9F009F;
+}
