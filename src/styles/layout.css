@@ -1,26 +1,26 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
 body {
   background-color: var(--background);
   color: var(--content);
-  font-size: 2rem;
-  margin: 0;
+  display: flex;
+  justify-content: center;
   min-height: 100vh;
-}
-
-p {
-  margin: 0;
+  min-width: 100vh;
 }
 
 .dashboard-container {
-  top: clamp(286px, 5vh, 286px);
-  left: 50%;
-  transform: translateX(-50%);
-  position: absolute;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  padding: 0;
-  gap: clamp(16px, 3vw, 32px);
+  gap: 16px;
   width: min(1024px, 100%);
+  margin: 0 auto;
+  padding: 285px 0;
 }
 

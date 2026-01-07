@@ -1,18 +1,31 @@
-import { type JSX, useId, useState } from "react";
+import { type JSX, useEffect, useId, useState } from "react";
 
 interface SearchProps {
   onSearch: (query: string) => void;
   placeholder?: string;
   label?: string;
+  debounceDelay?: number;
 }
 
 function Search({
   onSearch,
   placeholder = "Search...",
   label = "Search",
+  debounceDelay = 500,
 }: SearchProps): JSX.Element {
   const [query, setQuery] = useState("");
   const searchId = useId();
+
+  // Debounce the search
+  useEffect(() => {
+    if (!query) return;
+
+    const timeoutId = setTimeout(() => {
+      onSearch(query);
+    }, debounceDelay);
+
+    return () => clearTimeout(timeoutId);
+  }, [query, onSearch, debounceDelay]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +37,7 @@ function Search({
   };
 
   return (
-    <search className="search-container" aria-label="Search form">
+    <search className="search-container" aria-label="Search form" data-testid="search-container">
       <label htmlFor={searchId} className="poppins-medium search-label">
         {label}
       </label>

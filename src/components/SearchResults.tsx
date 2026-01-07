@@ -9,7 +9,6 @@ interface SearchResultsProps {
 export function SearchResults({ query }: SearchResultsProps) {
   const [selectedRole, setSelectedRole] = useState<Role | undefined>(undefined);
   const { filteredUsers, isLoading } = useQuery(query, selectedRole);
-  console.log("Filtered Users:", { filteredUsers, isLoading, query });
   if (filteredUsers.length === 0 && !query) {
     return null;
   }
