@@ -1,21 +1,18 @@
 import { useState } from "react";
-import { type Role, roles } from "../data/users";
+import { type Role, roles, type User } from "../data/users";
 import { useQuery } from "../hooks/useQuery";
 
 interface SearchResultsProps {
   query?: string;
+  setCurrentUser?: (user: User | null) => void;
 }
 
-export function SearchResults({ query }: SearchResultsProps) {
+export function SearchResults({ query, setCurrentUser }: SearchResultsProps) {
   const [selectedRole, setSelectedRole] = useState<Role | undefined>(undefined);
   const { filteredUsers, isLoading } = useQuery(query, selectedRole);
   if (filteredUsers.length === 0 && !query) {
     return null;
   }
-  if (isLoading) {
-    return <div className="search-results loading">Loading...</div>;
-  }
-
   return (
     <div className="search-results">
       <div className="filter-container">
@@ -23,8 +20,8 @@ export function SearchResults({ query }: SearchResultsProps) {
         {roles.map((role) => (
           <button
             key={role}
-            onClick={() => setSelectedRole(role)}
-            className={`filter-button ${selectedRole === role ? "active" : ""}`}
+            onClick={() => setSelectedRole(role === selectedRole ? undefined : role)}
+            className={`filter-button ${selectedRole === role ? "active" : selectedRole ? "opacity-50" : ""}`}
             data-role={role}
             type="button"
           >
@@ -33,7 +30,9 @@ export function SearchResults({ query }: SearchResultsProps) {
         ))}
       </div>
       <hr className="divider" />
-      {filteredUsers.length === 0 ? (
+      {isLoading ? (
+        <div className="search-results loading">Loading...</div>
+      ) : filteredUsers.length === 0 ? (
         <div className="search-results empty">No results found</div>
       ) : (
         filteredUsers.map((result) => (
@@ -55,7 +54,7 @@ export function SearchResults({ query }: SearchResultsProps) {
                 {result.email}
               </a>
             </div>
-            <button type="button" className="card-button">
+            <button type="button" className="card-button" onClick={() => setCurrentUser?.(result)}>
               View Details
             </button>
           </div>

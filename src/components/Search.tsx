@@ -1,4 +1,4 @@
-import { type JSX, useEffect, useId, useState } from "react";
+import { type JSX, useEffect, useId, useRef, useState } from "react";
 
 interface SearchProps {
   onSearch: (query: string) => void;
@@ -11,29 +11,14 @@ function Search({
   onSearch,
   placeholder = "Search...",
   label = "Search",
-  debounceDelay = 500,
 }: SearchProps): JSX.Element {
-  const [query, setQuery] = useState("");
   const searchId = useId();
-
-  // Debounce the search
-  useEffect(() => {
-    if (!query) return;
-
-    const timeoutId = setTimeout(() => {
-      onSearch(query);
-    }, debounceDelay);
-
-    return () => clearTimeout(timeoutId);
-  }, [query, onSearch, debounceDelay]);
+  const searchInput = useRef<HTMLInputElement>(null);
+  const [disabled, setDisabled] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch(query);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
+    onSearch(searchInput.current?.value || "");
   };
 
   return (
@@ -44,16 +29,22 @@ function Search({
       <div className="search-form">
         <form onSubmit={handleSubmit}>
           <input
+            ref={searchInput}
             id={searchId}
             type="text"
-            value={query}
-            onChange={handleChange}
             placeholder={placeholder}
             className="search-input"
             aria-describedby={`${searchId}-description`}
             autoComplete="off"
+            onChange={(e) => setDisabled(e.target.value.trim() === "")}
           />
-          <button type="submit" className="search-button" aria-label="Submit search">
+          <button
+            type="submit"
+            className="search-button"
+            aria-label="Submit search"
+            onSubmit={handleSubmit}
+            disabled={disabled}
+          >
             Search
           </button>
         </form>

@@ -14,6 +14,14 @@ body {
   min-width: 100vh;
 }
 
+p {
+  margin: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
 .dashboard-container {
   display: flex;
   flex-direction: column;
@@ -24,3 +32,9 @@ body {
   padding: 285px 0;
 }
 
+.divider {
+  width: 100%;
+  height: 1px;
+  border: none;
+  background-color: #63666A;
+}

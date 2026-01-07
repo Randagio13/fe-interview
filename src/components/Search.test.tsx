@@ -41,26 +41,6 @@ describe("Search Component", () => {
     expect(mockOnSearch).toHaveBeenCalledWith("test query");
   });
 
-  it("calls onSearch with debounce when typing", async () => {
-    const user = userEvent.setup();
-    render(<Search onSearch={mockOnSearch} debounceDelay={100} />);
-
-    const input = screen.getByRole("textbox");
-
-    await user.type(input, "test");
-
-    // Should not call immediately
-    expect(mockOnSearch).not.toHaveBeenCalled();
-
-    // Should call after debounce delay
-    await waitFor(
-      () => {
-        expect(mockOnSearch).toHaveBeenCalledWith("test");
-      },
-      { timeout: 200 },
-    );
-  });
-
   it("has proper accessibility attributes", () => {
     render(<Search onSearch={mockOnSearch} />);
 
@@ -87,25 +67,24 @@ describe("Search Component", () => {
 
   it("prevents default form submission", async () => {
     const user = userEvent.setup();
-    const mockPreventDefault = vi.fn();
 
     render(<Search onSearch={mockOnSearch} />);
 
-    // Find the form element by its tag
+    // Add some text to enable the button
+    const searchInput = screen.getByRole("textbox");
+    await user.type(searchInput, "test");
+
+    // Get the form and spy on form submission
     const form = document.querySelector("form");
     expect(form).toBeInTheDocument();
 
-    // Mock form submission
-    const submitHandler = (e: Event) => {
-      mockPreventDefault();
-      e.preventDefault();
-    };
-
-    form?.addEventListener("submit", submitHandler);
+    const mockSubmit = vi.fn();
+    form?.addEventListener("submit", mockSubmit);
 
     const button = screen.getByRole("button");
     await user.click(button);
 
-    expect(mockPreventDefault).toHaveBeenCalled();
+    expect(mockSubmit).toHaveBeenCalled();
+    expect(mockOnSearch).toHaveBeenCalledWith("test");
   });
 });

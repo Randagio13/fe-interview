@@ -130,4 +130,77 @@ describe("SearchResults Component", () => {
 
     expect(screen.queryByText("No results found")).not.toBeInTheDocument();
   });
+
+  it("renders 'View Details' buttons for each user", () => {
+    render(<SearchResults query="test" />);
+
+    const viewDetailsButtons = screen.getAllByText("View Details");
+    expect(viewDetailsButtons).toHaveLength(mockUsers.length);
+  });
+
+  it("calls setCurrentUser when 'View Details' button is clicked", async () => {
+    const user = userEvent.setup();
+    const mockSetCurrentUser = vi.fn();
+
+    render(<SearchResults query="test" setCurrentUser={mockSetCurrentUser} />);
+
+    const viewDetailsButtons = screen.getAllByText("View Details");
+    await user.click(viewDetailsButtons[0]);
+
+    expect(mockSetCurrentUser).toHaveBeenCalledWith(mockUsers[0]);
+  });
+
+  it("calls setCurrentUser with correct user for different buttons", async () => {
+    const user = userEvent.setup();
+    const mockSetCurrentUser = vi.fn();
+
+    render(<SearchResults query="test" setCurrentUser={mockSetCurrentUser} />);
+
+    const viewDetailsButtons = screen.getAllByText("View Details");
+
+    // Click first user's button
+    await user.click(viewDetailsButtons[0]);
+    expect(mockSetCurrentUser).toHaveBeenCalledWith(mockUsers[0]);
+
+    // Click second user's button
+    await user.click(viewDetailsButtons[1]);
+    expect(mockSetCurrentUser).toHaveBeenCalledWith(mockUsers[1]);
+  });
+
+  it("still renders properly when setCurrentUser is not provided", () => {
+    render(<SearchResults query="test" />);
+
+    const viewDetailsButtons = screen.getAllByText("View Details");
+    expect(viewDetailsButtons).toHaveLength(mockUsers.length);
+  });
+
+  it("'View Details' button does not error when clicked without setCurrentUser", async () => {
+    const user = userEvent.setup();
+
+    render(<SearchResults query="test" />);
+
+    const viewDetailsButtons = screen.getAllByText("View Details");
+
+    // This should not throw an error
+    await user.click(viewDetailsButtons[0]);
+
+    // Test passes if no error is thrown
+    expect(viewDetailsButtons[0]).toBeInTheDocument();
+  });
+
+  it("combines role filtering with user selection functionality", async () => {
+    const user = userEvent.setup();
+    const mockSetCurrentUser = vi.fn();
+
+    render(<SearchResults query="test" setCurrentUser={mockSetCurrentUser} />);
+
+    // Test role filter button
+    const editorButton = screen.getByRole("button", { name: "editor" });
+    await user.click(editorButton);
+
+    // Test view details button
+    const viewDetailsButtons = screen.getAllByText("View Details");
+    await user.click(viewDetailsButtons[0]);
+    expect(mockSetCurrentUser).toHaveBeenCalledWith(mockUsers[0]);
+  });
 });
